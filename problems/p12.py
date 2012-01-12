@@ -4,66 +4,52 @@ http://projecteuler.net/problem=12
 We can see that 28 is the first triangle number to have over five divisors.
 
 What is the value of the first triangle number to have over five hundred divisors?
-def factorial(n):
-    fact = 1
-    for i in xrange(1, n+1): fact = fact * i
-    return fact
-fact = factorial(500)
-x = fact
-if not x % 2:
-    if (i*i+i) == 2*x: print x
-        x = x + 2
+Solution: The value is obtained by representing the triangular number as,
+          product of primes raised to the power of times the prime. i.e., ax + by + ...+ cz = triangular_number.
+          where, x,y,z are powers of prime numbers a,b,c respectively.
+          Then, number of divisors is (x+1)(y+1)...(z+1)
+Answer: 76576500
 '''
-def gcd(a,b): return b and gcd(b, a % b) or a
-def lcm(a,b): return a * b / gcd(a,b)
-primes = []
-def get_primes(index):
-    num = 3
-    while num <= index:
-        dont_add = False
-        for prime in primes:
-            if prime*prime > num:
-                break
-            #check for a composite number
-            if not num % prime:
-                dont_add = True
-                break
-        if dont_add is False:
-            primes.append(num)
-        num = num + 1
+#map to hold a given triangular as (ax+by+..cz) described above.
+map_of_factors = {}
 
-#get_primes(1000000)
-list_of_factors = {}
-def factors(num):
-    i = 2
-    while (i * i <= num):
-        count = 0
-        #as long as num is divisible by i        
-        while not num % i:
-            num = num / i
-            count = count + 1
-        if i not in list_of_factors.keys(): list_of_factors[i] = count
-        list_of_factors[i] = count        
-        i = i + 1
-    list_of_factors[num] = 1
+#this method returns a map of primes and their exponents.
+def prime_factors(num):
+    prime = 2
+    #every number is a divisor of itself.
+    map_of_factors[num] = 1
+    while (prime * prime < num):
+        exponent = 0
+        #calculate the exponent of prime.
+        while not num % prime:
+            num = num / prime
+            exponent = exponent + 1
+        map_of_factors[prime] = exponent
+        prime = prime + 1
+    return map_of_factors.values()
 
 def no_of_divisors(num):
-    factors(num)
-    noofdiv = 1
-    for key, value in list_of_factors.iteritems():
-        if value:
-            noofdiv = noofdiv * (value+1)
-    return noofdiv
+    exponents = prime_factors(num)
+    number_of_divisors = 1
+    for exponent in exponents:
+        if exponent:
+            number_of_divisors = number_of_divisors * (exponent + 1)
+    return number_of_divisors
 
-for i in xrange(10000):
-    tri = (i* (i + 1) / 2)
-    list_of_factors = {}
-    nodiv = no_of_divisors(tri)
-    '''
-    #check if they are co-prime
-    if gcd(i, i+1) == 1:
-        nodiv = no_of_divisors(i)*no_of_divisors(i+1)
-    '''
-    if nodiv > 500:
-        print 'number: ', i, 'no_of_factors: ', nodiv,'\ntriangular: ', tri, 'factors: ', list_of_factors
+#start from 8 as they said it has 6 divisors anyway(example) :)
+for i in xrange(8, 50000):
+    tri = i * (i + 1) / 2
+    #clear the previous map
+    map_of_factors = {}
+    number_of_divisors = no_of_divisors(tri)
+    if number_of_divisors > 500:
+        print 'number: ', i, '\ndivisor count: ', number_of_divisors
+        print 'triangular number: ', tri, '\nmap: ', map_of_factors
+        '''
+        veri = 1
+        for k, v in map_of_factors.iteritems():
+            veri = veri * pow(k, v)
+        if veri == tri:
+            print 'verified'
+        '''
         break
