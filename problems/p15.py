@@ -9,9 +9,29 @@ Solution: Problem gets reduced to a combinations problem:
           so, 40C20
 Answer: 137846528820
 '''
+#Memoize a.k.a Cache.
+class Cached:
+    ''' 
+        Cache(function): an instance to memorize non-mutable arguments(keys).
+    '''
+    def __init__(self, func):
+        self.func = func
+        self.cache = {}
+    def __call__(self, *args):
+        '''
+        if not self.cache.has_key(args):
+            self.cache[args] = self.func(*args)
+        return self.cache[args]
+        '''
+        try: return self.cache[args]
+        except KeyError:
+            self.cache[args] = self.func(*args)
+            return self.cache[args]
+
 def factorial(num):
-    fact = 1
-    for i in xrange(1, num+1): fact = fact*i
-    return fact
-f20 = factorial(20)
-print factorial(40)/f20/f20
+    if num <= 1:
+        return num
+    return factorial(num - 1) * num
+
+fact = Cached(factorial)
+print fact(40)/fact(20)/fact(20)
