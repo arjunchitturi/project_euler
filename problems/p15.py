@@ -12,7 +12,7 @@ Answer: 137846528820
 #Memoize a.k.a Cache.
 class Cached:
     ''' 
-        Cache(function): an instance to memorize non-mutable arguments(keys).
+        Cache(function): an instance to memorize non-mutable arguments(keys) and values.
     '''
     def __init__(self, func):
         self.func = func
